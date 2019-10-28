@@ -1,0 +1,15 @@
+---
+title: "40-model-prep"
+output: html_document
+---
+```{r}
+fastballs_feat <- fastballs %>%
+  mutate(result = case_when(description %in% c("foul", "hit_into_play", "hit_into_play_no_out", "hit_into_play_score") ~ "swing",  description %in% c("foul_tip", "swinging_strike") ~ "miss")) %>%
+  std_by_hand(c("release_speed", "release_spin_rate", "pfx_x", "pfx_z")) %>%
+  avg_by_pitcher( c("release_speed", "release_spin_rate", "pfx_x", "pfx_z")) %>% 
+  max_by_pitcher( c("release_speed", "release_spin_rate", "pfx_x", "pfx_z")) %>% 
+  select(result, everything())
+
+
+```
+

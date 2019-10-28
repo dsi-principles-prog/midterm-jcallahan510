@@ -17,7 +17,6 @@ library(dplyr)
 library(assertr)
 library(ggplot2)
 library(readr)
-
 ```
 
 ```{r import}
@@ -26,17 +25,19 @@ statcast <- read_csv("statcast-2017-2019.csv")
 
 
 We are examining fastball movement, so we will filter the data down to include only pitches that were fastballs:
-```{r}
+```{r filter fastballs}
 fastballs <- statcast %>% 
   filter(pitch_type %in% c("FF", "FT", "FC", "SI"))
 ```
 
 
-```{r}
+
+
+##Checking and cleaning the data
+```{r check dataframe}
 summary(fastballs)
 ```
 
-##Checking and cleaning the data
 
 A summary shows that there are a few hundred NA values in important columns like release_speed, release_pos_x, release_pos_z, pfx_x, pfx_z, and release_extension.  Because our dataset is so large, we will simply remove rows with NA in these columns. 
 ```{r}
@@ -46,19 +47,19 @@ fastballs <- fastballs %>%
 
 
 Checking to see that all of our fastballs are within regular fastball velocity bounds:
-```{r}
+```{r velo assert}
 fastballs %>% 
   assert(within_bounds(83, 107), release_speed)
 ```
 The assert failed. There are 5570 fastballs thrown below the velocity threshhold, mostly by position pitchers who pitched briefly. We don't care about their data because they are not real pitchers, so let's filter these rows out:
-```{r}
+```{r filter bad velos}
 fastballs <- fastballs %>% 
   filter(release_speed > 83)
 ```
 
 
 Changing break movement from feet to inches:
-```{r}
+```{r feet to inches}
 fastballs <- fastballs %>% 
   mutate(pfx_x = round(pfx_x*12, 3), pfx_z = round(pfx_z*12, 3))
 ```

@@ -7,13 +7,14 @@ output: html_document
 
 ##In order to understand some pitch measurements better, let's provide some context by finding the standard score for release_speed, release_spin_rate, pfx_x, & pfx_z for each pitch, as thrown by either a right handed pitcher or a left handed pitcher.  This will let us see how each pitch relates to every other based on these measures:
 ```{r standardized measures}
-scale <- function(x) round((x - mean(x))/ sd(x), digits = 3)
+scale1 <- function(x) round((x - mean(x))/ sd(x), digits = 3)
 
 std_by_hand <- function(df, vars) {
   df %>% 
     group_by(p_throws) %>% 
-    mutate_at(vars, list(std = scale)) %>% 
-    ungroup()
+    mutate_at(vars, list(std = scale1)) %>% 
+    ungroup()%>% 
+    select(contains("std"), everything())
 }
 
 fastballs %>% 
@@ -29,28 +30,32 @@ fastballs %>%
 ```
 
 
-##Can we find each pitcher's mean for each of our four measurements, release_speed, release_spin_rate, pfx_x, & pfx_z? Group by pitcher_ID:
+##
 ```{r avg by pitcher}
-mean <- function(x) round((mean(x)), digits = 3)
+mean1 <- function(x) round((mean(x)), digits = 3)
 
-avg_by_pitcher <- function(df, vars) {
+avg_by_pitcher <- function(
   
   
   
   
-}
+  
+  
 ```
 
  
  
-##Can we find each pitcher's max for each of our four measurements, release_speed, release_spin_rate, pfx_x, & pfx_z? Group by pitcher_ID:
+##Can we find each pitcher's max for each of our four measurements, release_speed, release_spin_rate, pfx_x, & pfx_z? Group by "pitcher":
 ```{r max by pitcher}
-max <- function(x) round((max(x)), digits = 3)
+max1 <- function(x) round((max(x)), digits = 3)
 
-max_by_pitcher <- function(df, vars) {
+max_by_pitcher <- function(
   
   
   
   
-}
+  
+  
+  
+  
 ```
