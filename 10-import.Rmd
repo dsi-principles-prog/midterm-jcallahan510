@@ -1,0 +1,67 @@
+---
+title: "10-import"
+output: html_document
+---
+
+# 1. Describe the data and the problem
+
+This dataset contains information about every pitch thrown in a regular season Major League Baseball game since 2017.  A Doppler radar sits behind home plate in every stadium, measuring numerous attributes of each pitch, including velocity, vertical and horizontal release point, extension toward home plate of the release point, vertical and horizontal break, spin rate, and attributes of the resulting hit, including exit velocity, launch angle, and the expected weighted on-base avaerage (wOBA) of a ball struck at the specific velocity and angle. For this analysis, we will see if we can find a correlation between certain fastball measurements and swing and miss rates.
+
+# 2. Read in and check data
+
+Running the necessary libraries:
+```{r libararies}
+library(tidyverse)
+library(janitor)
+library(dplyr)
+library(assertr)
+library(ggplot2)
+library(readr)
+
+```
+
+```{r import}
+statcast <- read_csv("statcast-2017-2019.csv") 
+```
+
+
+We are examining fastball movement, so we will filter the data down to include only pitches that were fastballs:
+```{r}
+fastballs <- statcast %>% 
+  filter(pitch_type %in% c("FF", "FT", "FC", "SI"))
+```
+
+
+```{r}
+summary(fastballs)
+```
+
+##Checking and cleaning the data
+
+A summary shows that there are a few hundred NA values in important columns like release_speed, release_pos_x, release_pos_z, pfx_x, pfx_z, and release_extension.  Because our dataset is so large, we will simply remove rows with NA in these columns. 
+```{r}
+fastballs <- fastballs %>% 
+  filter(!is.na(release_speed), !is.na(release_pos_x), !is.na(release_pos_z), !is.na(pfx_x), !is.na(pfx_z), !is.na(release_extension), !is.na(release_spin_rate))
+```
+
+
+Checking to see that all of our fastballs are within regular fastball velocity bounds:
+```{r}
+fastballs %>% 
+  assert(within_bounds(83, 107), release_speed)
+```
+The assert failed. There are 5570 fastballs thrown below the velocity threshhold, mostly by position pitchers who pitched briefly. We don't care about their data because they are not real pitchers, so let's filter these rows out:
+```{r}
+fastballs <- fastballs %>% 
+  filter(release_speed > 83)
+```
+
+
+Changing break movement from feet to inches:
+```{r}
+fastballs <- fastballs %>% 
+  mutate(pfx_x = round(pfx_x*12, 3), pfx_z = round(pfx_z*12, 3))
+```
+
+
+
