@@ -46,16 +46,32 @@ avg_by_pitcher <- function(
  
  
 ##Can we find each pitcher's max for each of our four measurements, release_speed, release_spin_rate, pfx_x, & pfx_z? Group by "pitcher":
-```{r max by pitcher}
-max1 <- function(x) round((max(x)), digits = 3)
 
-max_by_pitcher <- function(
+The function will take in the fastball data frame and return a data frame that will have maximum value of a pitcher for release_speed, release_spin_rate, pfx_x, & pfx_z
+
+
+```{r max by pitcher}
+
+
+max_by_pitcher <- function(df){
   
-  
-  
-  
-  
-  
-  
-  
+pitch_measurement <- c("release_speed", "release_spin_rate", "pfx_x", "pfx_z")
+df%>% group_by(pitcher) %>% 
+  mutate_at(pitch_measurement,list(max=max),na.rm=TRUE) %>% 
+  ungroup() %>%
+  select(contains("max"), everything()) 
+}
+
 ```
+
+```{r test_max_by_pitcher}
+
+fastballs %>% max_by_pitcher %>% 
+  assert(within_bounds(min(fastballs$release_speed),max(fastballs$release_speed)),release_speed_max) %>% 
+  assert(within_bounds(min(fastballs$release_spin_rate,na.rm = TRUE),max(fastballs$release_spin_rate,na.rm = TRUE)),release_spin_rate_max) %>% 
+  assert(within_bounds(min(fastballs$pfx_x,na.rm = TRUE),max(fastballs$pfx_x,na.rm = TRUE)),pfx_x_max)
+
+```
+
+So the max values are well within range of the original columns
+
