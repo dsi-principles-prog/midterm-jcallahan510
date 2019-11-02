@@ -49,15 +49,15 @@ avg_by_pitcher <- function(
 
 The function will take in the fastball data frame and return a data frame that will have maximum value of a pitcher for release_speed, release_spin_rate, pfx_x, & pfx_z
 
+The columns will have _max added to their names.
 
 ```{r max by pitcher}
 
 
-max_by_pitcher <- function(df){
+max_by_pitcher <- function(df,x=c("release_speed", "release_spin_rate", "pfx_x", "pfx_z")){
   
-pitch_measurement <- c("release_speed", "release_spin_rate", "pfx_x", "pfx_z")
 df%>% group_by(pitcher) %>% 
-  mutate_at(pitch_measurement,list(max=max),na.rm=TRUE) %>% 
+  mutate_at(x,list(max=max),na.rm=TRUE) %>% 
   ungroup() %>%
   select(contains("max"), everything()) 
 }
